@@ -8,6 +8,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.ifeng.entities.IpsEntity;
 import com.ifeng.mongo.MongoFactory;
+import com.mongodb.Mongo;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class IpsLogStatBolts extends BaseRichBolt {
     public void cleanup() {
 
     }
-    private void saveToMongo(Map<IpsEntity,Integer> resMap){
+    private void saveToMongo(Map<IpsEntity,Integer> resMap,String collectionName){
         List<IpsEntity> res = new ArrayList<IpsEntity>();
         for (Map.Entry<IpsEntity, Integer> entry : resMap.entrySet()) {
             IpsEntity en = entry.getKey();
@@ -33,13 +34,16 @@ public class IpsLogStatBolts extends BaseRichBolt {
         }
         try {
             MongoFactory.getInstance().changeDb("ipstest");
+            MongoFactory.getInstance().getCollection(collectionName);
             MongoFactory.getInstance().insert(res, new Date());
         } catch (Exception err) {
+            err.printStackTrace();
         }
     }
     @Override
     public void execute(Tuple tuple) {
         IpsEntity en = (IpsEntity)tuple.getValue(0);
+        String colName = (String)tuple.getValue(1);
         if ((en.getHm().equals(currentTm) && currentDate.equals(en.getCreateDate()))
                 || (currentDate.equals("") && currentTm.equals(""))) {
             if (statMap.containsKey(en)) {
@@ -49,11 +53,11 @@ public class IpsLogStatBolts extends BaseRichBolt {
             }
         }else{
             Map t = statMap;
-            currentTm = en.getHm();
-            currentDate = en.getCreateDate();
             statMap = new HashMap<IpsEntity, Integer>();
-            saveToMongo(t);
+            saveToMongo(t,colName);
         }
+        currentTm = en.getHm();
+        currentDate = en.getCreateDate();
         collector.ack(tuple);
     }
 

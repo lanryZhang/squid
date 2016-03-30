@@ -9,6 +9,7 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.ifeng.constant.IpsFieldsCombination;
 import com.ifeng.entities.IpsEntity;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -38,8 +39,9 @@ public class IpsLogAnalysisBolts extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         IpsEntity en = (IpsEntity) tuple.getValue(0);
-        collector.emit(new Values(en));
+
         try {
+            collector.emit(new Values(en,StringUtils.join(cols.get(0),"_")));
             for (List<String> item : cols) {
                 if (item.size() < 4) {
                     IpsEntity t = new IpsEntity();
@@ -49,7 +51,7 @@ public class IpsLogAnalysisBolts extends BaseRichBolt {
                             f.set(t,f.get(en));
                         }
                     }
-                    collector.emit(new Values(t));
+                    collector.emit(new Values(t, StringUtils.join(item,"_")));
 
                 }
             }

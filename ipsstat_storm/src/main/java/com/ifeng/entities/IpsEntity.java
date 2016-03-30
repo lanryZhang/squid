@@ -9,21 +9,21 @@ import java.io.Serializable;
  * Created by zhanglr on 2016/3/29.
  */
 public class IpsEntity extends EntyCodec implements Serializable {
-    private String hostIp;
+    private String hostIp="";
     /**
      * 请求类型
      * 0 点播 1直播,2 手机直播
      */
-    private String requestType;
-    private String nodeIp;
-    private String clientType;
-    private String netName;
-    private String province;
-    private int requestNum;
-    private String cdnId;
-    private String channelid;
-    private String createDate;
-    private String hm;
+    private String requestType = "";
+    private String nodeIp = "";
+    private String clientType = "";
+    private String netName = "";
+    private String province = "";
+    private int requestNum = 0;
+    private String cdnId = "";
+    private String channelid = "";
+    private String createDate = "";
+    private String hm = "";
 
     public String getCdnId() {
         return cdnId;
