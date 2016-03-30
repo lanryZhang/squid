@@ -69,6 +69,6 @@ public class IpsLogStatBolts extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("ipslog"));
+        outputFieldsDeclarer.declare(new Fields("ipslog","colname"));
     }
 }
