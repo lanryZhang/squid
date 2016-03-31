@@ -16,7 +16,6 @@ public class KafkaSpoutConfig extends PropertiesConfig {
 
     public KafkaSpoutConfig(String path) {
         super(path);
-        super.initFile();
     }
 
     public SpoutConfig getConfig(){
@@ -30,8 +29,8 @@ public class KafkaSpoutConfig extends PropertiesConfig {
         config.zkServers = Arrays.asList(pro.getProperty("zookeeper.connect").split(","));
         config.zkPort=Integer.parseInt(pro.getProperty("zookeeper.port"));
 
-        config.ignoreZkOffsets = true;
-        config.id = "ipslog";
+        config.ignoreZkOffsets = Boolean.parseBoolean(pro.getProperty("ignoreZkOffsets"));
+        config.id = pro.getProperty("id");
         config.scheme = new SchemeAsMultiScheme(new StringScheme());
 
         return config;

@@ -8,7 +8,6 @@ import java.util.Properties;
 public class KafkaConsumerProperties extends  PropertiesConfig {
     public KafkaConsumerProperties(String path) {
         super(path);
-        super.initFile();
     }
 
     @Override

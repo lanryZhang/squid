@@ -1,7 +1,7 @@
 package com.ifeng;
 
 import backtype.storm.Config;
-import backtype.storm.LocalCluster;
+import backtype.storm.StormSubmitter;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 import com.ifeng.storm.bolts.IpsLogAnalysisBolts;
@@ -16,17 +16,17 @@ public class Server {
     public static void main(String[] args) {
         try {
             TopologyBuilder builder = new TopologyBuilder();
-            builder.setSpout("logreader", new IpsLogSpouts("IPS_LOG"),5);
-            builder.setBolt("loginitialize", new IpsLogInitializeBolts(),2).shuffleGrouping("logreader");
-            builder.setBolt("loganalysis", new IpsLogAnalysisBolts(),2).shuffleGrouping("loginitialize");
-            builder.setBolt("logstat", new IpsLogStatBolts()).fieldsGrouping("loganalysis",new Fields("ipslog"));
-
+            builder.setSpout("logreader", new IpsLogSpouts(),5);
+            builder.setBolt("loginitialize", new IpsLogInitializeBolts(),4).shuffleGrouping("logreader");
+            builder.setBolt("loganalysis", new IpsLogAnalysisBolts(),4).fieldsGrouping("loginitialize", new Fields("ipslog"));
+            builder.setBolt("logstat", new IpsLogStatBolts(),4).fieldsGrouping("loganalysis",new Fields("ipslog"));
 
             Config conf = new Config();
             //conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
-            conf.put(Config.TOPOLOGY_DEBUG, true);
-            LocalCluster localCluster = new LocalCluster();
-            localCluster.submitTopology("Getting-Started-Toplogie", conf, builder.createTopology());
+            conf.put(Config.TOPOLOGY_DEBUG, false);
+            StormSubmitter.submitTopology("Getting-Started-Toplogie", conf, builder.createTopology());
+//            LocalCluster localCluster = new LocalCluster();
+//            localCluster.submitTopology("Getting-Started-Toplogie", conf, builder.createTopology());
 
             //remote Submit
 //        Config conf = new Config();

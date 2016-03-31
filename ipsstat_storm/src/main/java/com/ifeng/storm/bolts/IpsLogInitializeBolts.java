@@ -50,6 +50,7 @@ public class IpsLogInitializeBolts extends BaseRichBolt{
                 }
                 en.setNodeIp(arr[15]);
                 en.setClientType(arr[17]);
+                en.setDateTime(new StringBuilder().append(en.getCreateDate()).append(" ").append(en.getHm()).toString());
                 collector.emit(new Values(en));
             }
         }catch (Exception err){

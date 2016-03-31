@@ -12,6 +12,7 @@ public abstract class PropertiesConfig implements IPropertiesConfig{
 
     public PropertiesConfig(String path){
         this.path = path;
+        this.initFile();
     }
     @Override
     public Properties getProperties() {

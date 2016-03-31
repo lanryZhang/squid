@@ -23,15 +23,16 @@ import java.util.Map;
  */
 public class IpsLogAnalysisBolts extends BaseRichBolt {
     private List<List<String>> cols = new ArrayList<List<String>>();
-    private Map<String,Field> fieldMap = new HashMap<String, Field>();
+    private Map<String, Field> fieldMap = new HashMap<String, Field>();
     private OutputCollector collector;
+
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         cols = new IpsFieldsCombination().getCols();
         Field[] fields = IpsEntity.class.getDeclaredFields();
         AccessibleObject.setAccessible(fields, true);
-        for (Field field : fields){
-            fieldMap.put(field.getName(),field);
+        for (Field field : fields) {
+            fieldMap.put(field.getName(), field);
         }
         this.collector = outputCollector;
     }
@@ -41,22 +42,22 @@ public class IpsLogAnalysisBolts extends BaseRichBolt {
         IpsEntity en = (IpsEntity) tuple.getValue(0);
 
         try {
-            collector.emit(new Values(en,StringUtils.join(cols.get(0),"_")));
             for (List<String> item : cols) {
-                if (item.size() < 4) {
-                    IpsEntity t = new IpsEntity();
-                    for (String inner : item) {
-                        if (fieldMap.containsKey(inner)) {
-                            Field f = fieldMap.get(inner);
-                            f.set(t,f.get(en));
-                        }
+                IpsEntity t = new IpsEntity();
+                for (String inner : item) {
+                    if (fieldMap.containsKey(inner)) {
+                        Field f = fieldMap.get(inner);
+                        f.set(t, f.get(en));
                     }
-                    collector.emit(new Values(t, StringUtils.join(item,"_")));
-
                 }
+                t.setHm(en.getHm());
+                t.setCreateDate(en.getCreateDate());
+                t.setDateTime(en.getDateTime());
+                collector.emit(new Values(t, StringUtils.join(item, "_")));
+
             }
             collector.ack(tuple);
-        }catch (Exception err){
+        } catch (Exception err) {
             err.printStackTrace();
             collector.fail(tuple);
         }
@@ -64,6 +65,6 @@ public class IpsLogAnalysisBolts extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("ipslog"));
+        outputFieldsDeclarer.declare(new Fields("ipslog","colname"));
     }
 }

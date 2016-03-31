@@ -24,6 +24,15 @@ public class IpsEntity extends EntyCodec implements Serializable {
     private String channelid = "";
     private String createDate = "";
     private String hm = "";
+    private String dateTime = "";
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
 
     public String getCdnId() {
         return cdnId;
